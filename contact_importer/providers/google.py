@@ -3,7 +3,7 @@
 
 from .base import BaseProvider
 from lxml import etree
-from urllib import urlencode
+from urllib.parse import urlencode
 import requests
 import json
 

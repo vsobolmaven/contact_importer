@@ -2,7 +2,7 @@
 """ Live Contact Importer module """
 
 from .base import BaseProvider
-from urllib import urlencode
+from urllib.parse import urlencode
 import requests
 import json
 
