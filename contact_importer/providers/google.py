@@ -61,9 +61,45 @@ class GoogleContactImporter(BaseProvider):
         contacts = []
         
         for elm in elms:
+            contact = {
+                'id' : None,
+                'full_name' : None,
+                'email_addresses' : [],
+                'phone_numbers' : []
+            }
             children = elm.getchildren()
             for child in children:
-                if child.tag == "{http://schemas.google.com/g/2005}email":
-                    contacts.append(child.attrib.get('address'))
+                if child.tag == "{http://schemas.google.com/g/2005}name":
+                   name_elms = child.getchildren()
+                   for name_elm in name_elms:
+                       if name_elm.tag == "{http://schemas.google.com/g/2005}fullName":
+                           contact['full_name'] = name_elm.text
+                elif child.tag == "{http://schemas.google.com/g/2005}email":
+                    contact['email_addresses'].append(
+                        {
+                            'email_address': child.attrib.get('address'),
+                            'type': 'TODO'
+                        }
+                    )
+                elif child.tag == "{http://schemas.google.com/g/2005}phoneNumber":
+                    type = child.attrib.get('rel')
+                    if type:
+                        type = type.replace('http://schemas.google.com/g/2005#', '')
+
+                    phone_number = child.attrib.get('uri')
+                    if phone_number:
+                        phone_number = phone_number.replace('tel:', '')
+                    contact['phone_numbers'].append(
+                        {
+                            'phone_number': phone_number,
+                            'type': type
+                        }
+                    )
+                elif child.tag == "{http://schemas.google.com/g/2005}id":
+                    contact['id'] = child.text
+
+
+            if contact.get('full_name'):
+                contacts.append(contact)
 
         return contacts
