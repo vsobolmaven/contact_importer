@@ -9,7 +9,7 @@ import json
 
 AUTH_URL = "https://accounts.google.com/o/oauth2/auth"
 TOKEN_URL = "https://accounts.google.com/o/oauth2/token"
-PERM_SCOPE = "https://www.google.com/m8/feeds/contacts/default/full"
+PERM_SCOPE = "https://www.googleapis.com/auth/contacts.readonly"
 CONTACTS_URL = "https://www.google.com/m8/feeds/contacts/default/full?max-results=2000"
 
 
