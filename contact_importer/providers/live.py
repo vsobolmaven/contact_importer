@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """ Live Contact Importer module """
 
+from builtins import str
 from .base import BaseProvider
 from urllib.parse import urlencode
 import requests

@@ -22,8 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
+from builtins import object
 import cgi
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import time
 import random
 from urllib import parse as  urlparse
@@ -47,11 +52,11 @@ def build_authenticate_header(realm=''):
 
 def escape(s):
     """Escape a URL including any /."""
-    return urllib.quote(s, safe='~')
+    return urllib.parse.quote(s, safe='~')
 
 def _utf8_str(s):
     """Convert unicode to utf-8."""
-    if isinstance(s, unicode):
+    if isinstance(s, str):
         return s.encode("utf-8")
     else:
         return str(s)
@@ -132,7 +137,7 @@ class OAuthToken(object):
             }
         if self.callback_confirmed is not None:
             data['oauth_callback_confirmed'] = self.callback_confirmed
-        return urllib.urlencode(data)
+        return urllib.parse.urlencode(data)
 
     def from_string(s):
         """ Returns a token from something like:
@@ -193,7 +198,7 @@ class OAuthRequest(object):
     def get_nonoauth_parameters(self):
         """Get any non-OAuth parameters."""
         parameters = {}
-        for k, v in self.parameters.iteritems():
+        for k, v in self.parameters.items():
             # Ignore oauth parameters.
             if k.find('oauth_') < 0:
                 parameters[k] = v
@@ -204,7 +209,7 @@ class OAuthRequest(object):
         auth_header = 'OAuth realm="%s"' % realm
         # Add the oauth parameters.
         if self.parameters:
-            for k, v in self.parameters.iteritems():
+            for k, v in self.parameters.items():
                 if k[:6] == 'oauth_':
                     auth_header += ', %s="%s"' % (k, escape(str(v)))
         return {'Authorization': auth_header}
@@ -212,7 +217,7 @@ class OAuthRequest(object):
     def to_postdata(self):
         """Serialize as post data for a POST request."""
         return '&'.join(['%s=%s' % (escape(str(k)), escape(str(v))) \
-                         for k, v in self.parameters.iteritems()])
+                         for k, v in self.parameters.items()])
 
     def to_url(self):
         """Serialize as a URL for a GET request."""
@@ -228,7 +233,7 @@ class OAuthRequest(object):
             pass
             # Escape key values before sorting.
         key_values = [(escape(_utf8_str(k)), escape(_utf8_str(v))) \
-                      for k,v in params.items()]
+                      for k,v in list(params.items())]
         # Sort lexicographically, first after key, then after value.
         key_values.sort()
         # Combine key value pairs into a string.
@@ -354,15 +359,15 @@ class OAuthRequest(object):
             # Split key-value.
             param_parts = param.split('=', 1)
             # Remove quotes and unescape the value.
-            params[param_parts[0]] = urllib.unquote(param_parts[1].strip('\"'))
+            params[param_parts[0]] = urllib.parse.unquote(param_parts[1].strip('\"'))
         return params
     _split_header = staticmethod(_split_header)
 
     def _split_url_string(param_str):
         """Turn URL string into parameters."""
         parameters = cgi.parse_qs(param_str, keep_blank_values=False)
-        for k, v in parameters.iteritems():
-            parameters[k] = urllib.unquote(v[0])
+        for k, v in parameters.items():
+            parameters[k] = urllib.parse.unquote(v[0])
         return parameters
     _split_url_string = staticmethod(_split_url_string)
 
@@ -467,7 +472,7 @@ class OAuthServer(object):
             # Get the signature method object.
             signature_method = self.signature_methods[signature_method]
         except KeyError:
-            signature_method_names = ', '.join(self.signature_methods.keys())
+            signature_method_names = ', '.join(list(self.signature_methods.keys()))
             raise OAuthError('Signature method %s not supported try one of the '
                              'following: %s' % (signature_method, signature_method_names))
 

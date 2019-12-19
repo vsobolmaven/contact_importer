@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """ Google Contact Importer module """
 
+from builtins import str
 from .base import BaseProvider
 from lxml import etree
 from urllib.parse import urlencode

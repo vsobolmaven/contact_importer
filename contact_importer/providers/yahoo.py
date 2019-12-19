@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """ Yahoo Contact Importer module """
 
+from builtins import str
 from .base import BaseProvider
 from ..lib import oauth1 as oauth
 from urllib.parse import urlencode, parse_qs
@@ -83,7 +84,7 @@ class YahooContactImporter(BaseProvider):
             format="json"
         )
 
-        request_params_new = OrderedDict(sorted(request_params.items(), key=lambda t: t[0]))
+        request_params_new = OrderedDict(sorted(list(request_params.items()), key=lambda t: t[0]))
 
         consumer = oauth.OAuthConsumer(key=self.client_id, secret=self.client_secret)
         token = oauth.OAuthToken(key=self.oauth_token, secret=self.oauth_token_secret)

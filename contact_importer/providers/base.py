@@ -1,4 +1,5 @@
 
+from builtins import object
 class BaseProvider(object):
 
     def __init__(self, client_id, client_secret, redirect_url):
